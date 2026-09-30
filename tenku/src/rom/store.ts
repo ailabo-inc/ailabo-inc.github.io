@@ -37,6 +37,23 @@ export async function romFromFile(file: File, onStatus: (s: string) => void): Pr
     return { name: file.name, bytes: new Uint8Array(await file.arrayBuffer()) };
   }
   onStatus('アーカイブを展開中…（1分ほどかかることがあります）');
+  try {
+    return await extractInWorker(file);
+  } catch (e) {
+    // Workerが使えない環境（一部のサンドボックス等）ではメインスレッドで展開する
+    console.warn('Worker展開に失敗、メインスレッドで再試行', e);
+    const [{ default: SevenZip }, { default: wasmUrl }, { extractNds }] = await Promise.all([
+      import('7z-wasm'),
+      import('7z-wasm/7zz.wasm?url'),
+      import('./extract-core'),
+    ]);
+    const sz = await SevenZip({ locateFile: () => wasmUrl, print: () => {}, printErr: () => {} });
+    sz.FS.writeFile('/archive', new Uint8Array(await file.arrayBuffer()));
+    return extractNds(sz, '/archive');
+  }
+}
+
+async function extractInWorker(file: File): Promise<{ name: string; bytes: Uint8Array }> {
   const worker = new Worker(new URL('./extract.worker.ts', import.meta.url), { type: 'module' });
   try {
     return await new Promise((resolve, reject) => {
