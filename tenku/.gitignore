@@ -1,0 +1,11 @@
+node_modules/
+dist/
+# ROM・抽出データは絶対にコミットしない（公開リポジトリ）
+*.nds
+*.srl
+*.7z
+*.zip
+/rom/
+/roms/
+/extracted/
+/dump/
