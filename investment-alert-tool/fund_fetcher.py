@@ -1,102 +1,76 @@
 """
 投資信託データ取得モジュール
-Yahoo Finance Japan から基準価額をスクレイピング
+みんかぶ投信 (itf.minkabu.jp) から基準価額を取得
 """
 
 import re
-import time
-import pandas as pd
 import urllib.request
+import pandas as pd
 from datetime import datetime, timedelta
 
 
 def fetch_fund_data(fund_code: str, days: int = 365) -> pd.DataFrame:
-    return _fetch_yahoo_japan(fund_code, days)
+    return _fetch_minkabu(fund_code)
 
 
-def _fetch_yahoo_japan(fund_code: str, days: int) -> pd.DataFrame:
-    """Yahoo Finance Japan の投資信託ページから基準価額を取得"""
-    target_start = datetime.now() - timedelta(days=days + 30)
-    all_rows = []
-
-    for page in range(1, 30):
-        url = f"https://finance.yahoo.co.jp/quote/{fund_code}/history?page={page}"
-        try:
-            req = urllib.request.Request(
-                url,
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Accept-Language": "ja,en-US;q=0.7,en;q=0.3",
-                },
-            )
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                html = resp.read().decode("utf-8")
-        except Exception:
-            break
-
-        rows = _parse_table(html)
-        if not rows:
-            break
-        all_rows.extend(rows)
-
-        # 十分な期間のデータが揃ったら終了
-        try:
-            oldest = datetime.strptime(all_rows[-1][0], "%Y-%m-%d")
-            if oldest <= target_start:
-                break
-        except Exception:
-            pass
-
-        # 次ページがなければ終了
-        if f"page={page + 1}" not in html:
-            break
-        time.sleep(0.3)
-
-    if not all_rows:
+def _fetch_minkabu(fund_code: str) -> pd.DataFrame:
+    """みんかぶ投信から基準価額・前日比を取得してDataFrameを返す"""
+    url = f"https://itf.minkabu.jp/fund/{fund_code}"
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "ja,en-US;q=0.7,en;q=0.3",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            html = resp.read().decode("utf-8")
+    except Exception:
         return pd.DataFrame()
 
-    df = pd.DataFrame(all_rows, columns=["Date", "Close"])
+    # メタdescription から「基準価額XXXXX円、前日比YYY（Z.ZZ%）」を抽出
+    m = re.search(
+        r"基準価額([0-9,]+)円、前日比([-−+]?[0-9,]+)（([+-]?[0-9.]+)%）",
+        html,
+    )
+    if not m:
+        return pd.DataFrame()
+
+    price = float(m.group(1).replace(",", ""))
+    change_amount_str = m.group(2).replace("−", "-").replace(",", "")
+    change_amount = float(change_amount_str)
+    prev_price = price - change_amount
+
+    # 日付を取得（ページ内の「基準価額（MM/DD）」形式）
+    date_m = re.search(r"基準価額（(\d{1,2})/(\d{1,2})）", html)
+    if date_m:
+        now = datetime.now()
+        month = int(date_m.group(1))
+        day = int(date_m.group(2))
+        # 月が未来なら前年として扱う
+        try:
+            nav_date = datetime(now.year, month, day)
+            if nav_date > now + timedelta(days=1):
+                nav_date = datetime(now.year - 1, month, day)
+        except ValueError:
+            nav_date = now
+    else:
+        nav_date = datetime.now()
+
+    prev_date = nav_date - timedelta(days=1)
+
+    rows = [
+        (prev_date.strftime("%Y-%m-%d"), prev_price),
+        (nav_date.strftime("%Y-%m-%d"), price),
+    ]
+
+    df = pd.DataFrame(rows, columns=["Date", "Close"])
     df["Date"] = pd.to_datetime(df["Date"])
     df = df.set_index("Date").sort_index()
-    df = df[~df.index.duplicated()]
     df["Open"] = df["Close"]
     df["High"] = df["Close"]
     df["Low"] = df["Close"]
     df["Volume"] = 0
     return df
-
-
-def _parse_table(html: str):
-    """HTML から 日付 / 基準価額 ペアを抽出（新旧フォーマット対応）"""
-    rows = []
-    tr_re = re.compile(r"<tr[^>]*>(.*?)</tr>", re.DOTALL)
-    td_re = re.compile(r"<td[^>]*>(.*?)</td>", re.DOTALL)
-    tag_re = re.compile(r"<[^>]+>")
-    # 新フォーマット: 2026/10/23
-    date_new = re.compile(r"(\d{4})/(\d{1,2})/(\d{1,2})")
-    # 旧フォーマット: 2026年07月10日
-    date_old = re.compile(r"(\d{4})年(\d{1,2})月(\d{1,2})日")
-
-    for tr in tr_re.finditer(html):
-        cells = [tag_re.sub("", c).strip() for c in td_re.findall(tr.group(1))]
-        if len(cells) < 2:
-            continue
-
-        date_str = None
-        dm = date_new.search(cells[0])
-        if dm:
-            date_str = f"{dm.group(1)}-{dm.group(2).zfill(2)}-{dm.group(3).zfill(2)}"
-        else:
-            dm = date_old.search(cells[0])
-            if dm:
-                date_str = f"{dm.group(1)}-{dm.group(2).zfill(2)}-{dm.group(3).zfill(2)}"
-
-        if not date_str:
-            continue
-        try:
-            price = float(cells[1].replace(",", "").replace("円", "").strip())
-            rows.append((date_str, price))
-        except (ValueError, TypeError):
-            continue
-    return rows
