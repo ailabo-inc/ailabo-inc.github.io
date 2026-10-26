@@ -3,6 +3,7 @@
 iPhoneのSafariからアクセスできるWebインターフェース
 """
 
+import json
 import math
 import os
 
@@ -19,8 +20,31 @@ from signals import detect_signals, summarize_signals
 app = Flask(__name__)
 portfolio = Portfolio(PORTFOLIO)
 
-# スキャン結果のキャッシュ（市場閉鎖時に最終データを返すため）
-_scan_cache: dict = {}
+# ── ディスクキャッシュ（Renderのサーバー再起動後も最終データを保持）──────
+_CACHE_DIR = os.path.join(os.path.dirname(__file__), ".cache")
+_SCAN_CACHE_FILE = os.path.join(_CACHE_DIR, "scan_cache.json")
+_FUND_CACHE_FILE = os.path.join(_CACHE_DIR, "fund_cache.json")
+os.makedirs(_CACHE_DIR, exist_ok=True)
+
+
+def _load_cache(path: str) -> dict:
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_cache(path: str, data: dict) -> None:
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+_scan_cache: dict = _load_cache(_SCAN_CACHE_FILE)
+_fund_cache: dict = _load_cache(_FUND_CACHE_FILE)
 
 
 def _safe_float(val) -> float | None:
@@ -76,7 +100,7 @@ def api_fund_scan(code: str):
         pnl = round((close - avg_cost) / 10000 * kuchi, 0)
         pnl_pct = round((close - avg_cost) / avg_cost * 100, 1)
 
-        return {
+        result = {
             "code": code,
             "name": fund["name"],
             "price": round(close, 0),
@@ -91,7 +115,16 @@ def api_fund_scan(code: str):
                 "closes": [round(float(v), 0) for v in df["Close"].iloc[-60:]],
             },
         }
+        # キャッシュに保存（ディスクにも永続化）
+        _fund_cache[code] = result
+        _save_cache(_FUND_CACHE_FILE, _fund_cache)
+        return result
     except Exception as exc:
+        # キャッシュがあれば返す（サーバー再起動後・休場日など）
+        if code in _fund_cache:
+            cached = dict(_fund_cache[code])
+            cached["cached"] = True
+            return cached
         return {"error": str(exc)}, 500
 
 
@@ -230,12 +263,13 @@ def api_scan(symbol: str):
                 "pnl_pct": round(pos.pnl_pct, 1),
             }
 
-        # キャッシュに保存
+        # キャッシュに保存（ディスクにも永続化）
         _scan_cache[symbol] = result
+        _save_cache(_SCAN_CACHE_FILE, _scan_cache)
         return result
 
     except Exception as exc:
-        # キャッシュがあれば返す（市場閉鎖時など）
+        # キャッシュがあれば返す（サーバー再起動後・市場閉鎖時など）
         if symbol in _scan_cache:
             cached = dict(_scan_cache[symbol])
             cached["cached"] = True
