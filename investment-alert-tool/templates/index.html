@@ -25,7 +25,6 @@
       --red-soft: rgba(255,59,48,0.14);
       --blue-soft: rgba(10,132,255,0.14);
       --radius: 16px;
-      --radius-sm: 10px;
       --shadow: 0 2px 12px rgba(0,0,0,0.07);
       --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
     }
@@ -53,24 +52,24 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
     }
 
     /* ── ヘッダー ── */
     .header {
       position: sticky; top: 0; z-index: 100;
-      padding: calc(env(safe-area-inset-top) + 10px) 20px 10px;
-      background: rgba(242,242,247,0.75);
+      padding: calc(env(safe-area-inset-top, 0px) + 10px) 20px 10px;
+      background: rgba(242,242,247,0.82);
       backdrop-filter: saturate(180%) blur(24px);
       -webkit-backdrop-filter: saturate(180%) blur(24px);
       border-bottom: 1px solid var(--border);
     }
     @media (prefers-color-scheme: dark) {
-      .header { background: rgba(0,0,0,0.75); }
+      .header { background: rgba(0,0,0,0.82); }
     }
     .header-inner { display: flex; align-items: center; justify-content: space-between; }
     .header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
-    .header-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
+    .header-sub { font-size: 11px; color: var(--text2); margin-top: 1px; font-variant-numeric: tabular-nums; }
     .header-actions { display: flex; align-items: center; gap: 8px; }
     .btn-icon {
       width: 34px; height: 34px; border-radius: 17px;
@@ -97,7 +96,7 @@
       margin: 16px 16px 0;
       border-radius: 22px;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      padding: 24px 22px 22px;
+      padding: 24px 22px 20px;
       position: relative;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(10,50,96,0.4);
@@ -109,43 +108,35 @@
       pointer-events: none;
     }
     .hero-label { font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
-    .hero-total { font-size: 38px; font-weight: 800; color: #fff; letter-spacing: -1px; line-height: 1.1; margin: 6px 0 4px; }
-    .hero-pnl { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
+    .hero-total { font-size: 38px; font-weight: 800; color: #fff; letter-spacing: -1px; line-height: 1.1; margin: 6px 0 4px; font-variant-numeric: tabular-nums; }
+    .hero-pnl { font-size: 15px; font-weight: 600; margin-bottom: 14px; font-variant-numeric: tabular-nums; }
     .hero-pnl.pos { color: #30D158; }
     .hero-pnl.neg { color: #FF3B30; }
+
+    /* アロケーションバー */
+    .alloc-bar-wrap { margin-bottom: 14px; }
+    .alloc-bar {
+      height: 5px; border-radius: 3px;
+      background: rgba(255,255,255,0.12);
+      display: flex; overflow: hidden;
+    }
+    .alloc-seg { height: 100%; transition: width 0.5s ease; }
+    .alloc-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+    .alloc-label { font-size: 10px; color: rgba(255,255,255,0.45); }
+
     .hero-breakdown {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px; margin-top: 4px;
+      gap: 8px;
     }
     .hero-item {
       background: rgba(255,255,255,0.08);
       border-radius: 12px; padding: 10px 12px;
     }
     .hero-item-label { font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; }
-    .hero-item-val { font-size: 14px; font-weight: 700; color: #fff; }
-    .hero-item-pnl { font-size: 11px; font-weight: 600; margin-top: 2px; }
+    .hero-item-val { font-size: 14px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+    .hero-item-pnl { font-size: 11px; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
     .hero-item-pnl.pos { color: #30D158; }
     .hero-item-pnl.neg { color: #FF453A; }
-    .hero-loading { color: rgba(255,255,255,0.4); font-size: 14px; }
-
-    /* ── タブ ── */
-    .tabs-wrap { padding: 16px 16px 0; }
-    .tabs {
-      display: flex; background: var(--card2);
-      border-radius: 12px; padding: 3px; gap: 0;
-    }
-    .tab-btn {
-      flex: 1; border: none; background: none;
-      border-radius: 9px; padding: 9px 0;
-      font-size: 15px; font-weight: 600;
-      color: var(--text2); cursor: pointer;
-      transition: all 0.2s;
-    }
-    .tab-btn.active {
-      background: var(--card);
-      color: var(--text);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-    }
 
     /* ── コンテンツ ── */
     .content { padding: 0 16px; max-width: 600px; margin: 0 auto; }
@@ -185,10 +176,13 @@
     .card-name { font-size: 15px; font-weight: 700; line-height: 1.2; }
     .card-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
     .card-right { text-align: right; flex-shrink: 0; }
-    .card-price { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
+    .card-price { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
     .card-change { font-size: 13px; font-weight: 700; margin-top: 2px; }
     .up { color: var(--green); }
     .down { color: var(--red); }
+
+    /* ── スパークライン ── */
+    .spark-wrap { margin: -4px 16px 8px; }
 
     /* ── P&Lバー ── */
     .pnl-bar {
@@ -201,7 +195,7 @@
     .pnl-bar-left { font-size: 12px; color: var(--text2); }
     .pnl-bar-left strong { font-size: 13px; font-weight: 700; color: var(--text); }
     .pnl-bar-right { text-align: right; }
-    .pnl-bar-right .pnl-val { font-size: 15px; font-weight: 800; }
+    .pnl-bar-right .pnl-val { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
     .pnl-bar-right .pnl-pct { font-size: 12px; font-weight: 600; margin-top: 1px; }
     .pnl-val.pos { color: var(--green); }
     .pnl-val.neg { color: var(--red); }
@@ -229,38 +223,42 @@
     .signal-tag.sell { background: var(--red-soft); color: var(--red); }
     .signal-tag.alert { background: rgba(255,159,10,0.14); color: var(--orange); }
 
-    /* ── 指標グリッド ── */
-    .indicators-grid {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 1px; background: var(--border);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+    /* ── 指標チップ ── */
+    .ind-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+    .ind-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 700;
     }
-    .ind-cell {
-      background: var(--card);
-      padding: 10px 12px; text-align: center;
-    }
-    .ind-cell-label { font-size: 10px; color: var(--text2); font-weight: 500; margin-bottom: 3px; }
-    .ind-cell-val { font-size: 14px; font-weight: 700; }
-    .ind-cell-val.bullish { color: var(--green); }
-    .ind-cell-val.bearish { color: var(--red); }
-    .ind-cell-val.neutral { color: var(--text3); }
+    .ind-chip .chip-label { font-size: 10px; font-weight: 600; opacity: 0.7; }
+    .ind-chip.bullish { background: var(--green-soft); color: var(--green); }
+    .ind-chip.bearish { background: var(--red-soft); color: var(--red); }
+    .ind-chip.neutral { background: var(--card2); color: var(--text2); }
 
     /* ── アクション行 ── */
     .actions-row {
-      display: flex; gap: 8px; padding: 10px 16px 12px;
+      display: flex; gap: 8px; padding: 0 16px 12px;
     }
     .btn-action {
-      flex: 1; padding: 8px 0;
-      background: var(--card2); border: none; border-radius: 9px;
+      flex: 1; padding: 9px 0;
+      background: var(--card2); border: none; border-radius: 10px;
       font-size: 13px; font-weight: 600; color: var(--text2);
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;
+      transition: background 0.15s, color 0.15s;
     }
     .btn-action:active { opacity: 0.6; }
+    .btn-action.active { background: var(--blue-soft); color: var(--blue); }
 
-    /* ── チャート・ニュース ── */
-    .chart-wrap { display: none; padding: 4px 12px 12px; }
-    .chart-wrap.open { display: block; }
+    /* ── チャート・ニュース（CSS gridアニメーション） ── */
+    .chart-wrap, .news-wrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.28s ease;
+    }
+    .chart-wrap.open, .news-wrap.open { grid-template-rows: 1fr; }
+    .chart-inner, .news-inner { overflow: hidden; min-height: 0; }
+    .chart-inner { padding: 0 12px 12px; }
+    .news-inner { padding: 0 16px 12px; }
     .chart-period-row { display: flex; gap: 6px; padding: 4px 0 8px; }
     .btn-period {
       background: none; border: 1px solid var(--border);
@@ -269,8 +267,6 @@
     }
     .btn-period.active { background: var(--blue); border-color: var(--blue); color: #fff; }
     .btn-period:active { opacity: 0.7; }
-    .news-wrap { display: none; padding: 0 16px 12px; }
-    .news-wrap.open { display: block; }
     .news-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
     .news-item:last-child { border-bottom: none; }
     .news-title a { font-size: 13px; line-height: 1.4; color: var(--text); text-decoration: none; }
@@ -290,8 +286,8 @@
     .summary-row-name { font-size: 14px; font-weight: 600; }
     .summary-row-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
     .summary-row-right { text-align: right; }
-    .summary-row-right .mv { font-size: 15px; font-weight: 700; }
-    .summary-row-right .pnl-sm { font-size: 12px; font-weight: 700; margin-top: 2px; }
+    .summary-row-right .mv { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .summary-row-right .pnl-sm { font-size: 12px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
     .pnl-sm.pos { color: var(--green); }
     .pnl-sm.neg { color: var(--red); }
 
@@ -310,6 +306,30 @@
       text-align: center; font-size: 11px; color: var(--text3);
       padding: 20px 0 8px;
     }
+
+    /* ── ボトムナビ ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(242,242,247,0.88);
+      backdrop-filter: saturate(180%) blur(24px);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 0 0 env(safe-area-inset-bottom, 0px);
+    }
+    @media (prefers-color-scheme: dark) {
+      .bottom-nav { background: rgba(28,28,30,0.92); }
+    }
+    .nav-btn {
+      flex: 1; border: none; background: none;
+      padding: 10px 0 12px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      color: var(--text3); transition: color 0.15s;
+    }
+    .nav-btn.active { color: var(--blue); }
+    .nav-btn:active { opacity: 0.6; }
+    .nav-btn-icon { font-size: 22px; line-height: 1; }
+    .nav-btn-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1px; }
   </style>
 </head>
 <body>
@@ -337,6 +357,10 @@
     <div class="hero-label">総資産</div>
     <div class="hero-total" id="hero-total">－</div>
     <div class="hero-pnl" id="hero-pnl"></div>
+    <div class="alloc-bar-wrap" id="alloc-bar-wrap" style="display:none">
+      <div class="alloc-bar" id="alloc-bar"></div>
+      <div class="alloc-labels" id="alloc-labels"></div>
+    </div>
     <div class="hero-breakdown">
       <div class="hero-item">
         <div class="hero-item-label">日本株</div>
@@ -356,15 +380,7 @@
     </div>
   </div>
 
-  <!-- タブ -->
-  <div class="tabs-wrap">
-    <div class="tabs">
-      <button class="tab-btn active" id="tab-btn-stocks" onclick="switchTab('stocks')">株式</button>
-      <button class="tab-btn" id="tab-btn-funds" onclick="switchTab('funds')">投信</button>
-    </div>
-  </div>
-
-  <!-- 株式タブ -->
+  <!-- コンテンツ -->
   <div class="content">
     <div class="tab-panel active" id="tab-stocks">
       <div class="section-label">ウォッチリスト</div>
@@ -373,7 +389,6 @@
       <div id="portfolio-section"></div>
     </div>
 
-    <!-- 投信タブ -->
     <div class="tab-panel" id="tab-funds">
       <div class="section-label">投資信託</div>
       <div id="funds-section"></div>
@@ -381,6 +396,18 @@
 
     <div class="footer-info" id="last-updated"></div>
   </div>
+</div>
+
+<!-- ボトムナビゲーション -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-btn-stocks" onclick="switchTab('stocks')">
+    <div class="nav-btn-icon">📈</div>
+    <div class="nav-btn-label">株式</div>
+  </button>
+  <button class="nav-btn" id="nav-btn-funds" onclick="switchTab('funds')">
+    <div class="nav-btn-icon">🏦</div>
+    <div class="nav-btn-label">投信</div>
+  </button>
 </div>
 
 <script>
@@ -401,9 +428,9 @@
 
   // ── タブ ─────────────────────────────────────────────
   function switchTab(name) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById(`tab-btn-${name}`).classList.add('active');
+    document.getElementById(`nav-btn-${name}`).classList.add('active');
     document.getElementById(`tab-${name}`).classList.add('active');
   }
 
@@ -416,12 +443,32 @@
     watchlist = (await wlRes.json()).watchlist || [];
     funds = (await fRes.json()).funds || [];
     renderSkeletons();
-    // FXレート先取り
     fetch('/api/fx').then(r => r.json()).then(d => {
       fxRate = d.usdjpy || 150;
       renderHero();
     }).catch(() => {});
     scanAll();
+  }
+
+  // ── スパークライン SVG ────────────────────────────────
+  function makeSpark(closes, isUp) {
+    if (!closes || closes.length < 3) return '';
+    const pts = closes.slice(-45);
+    const lo = Math.min(...pts), hi = Math.max(...pts);
+    const range = hi - lo || 1;
+    const w = 300, h = 48, px = 2, py = 5;
+    const xs = pts.map((_, i) => px + i / (pts.length - 1) * (w - px * 2));
+    const ys = pts.map(v => py + (1 - (v - lo) / range) * (h - py * 2));
+    const lineD = xs.map((x, i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+    const areaD = `M${xs[0].toFixed(1)},${h} ${xs.map((x, i) => `L${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ')} L${xs[xs.length-1].toFixed(1)},${h}Z`;
+    const c = isUp ? '#30D158' : '#FF3B30';
+    const f = isUp ? 'rgba(48,209,88,0.10)' : 'rgba(255,59,48,0.10)';
+    const lx = xs[xs.length-1].toFixed(1), ly = ys[ys.length-1].toFixed(1);
+    return `<div class="spark-wrap"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block;width:100%;height:48px">
+      <path d="${areaD}" fill="${f}"/>
+      <path d="${lineD}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${lx}" cy="${ly}" r="2.5" fill="${c}"/>
+    </svg></div>`;
   }
 
   // ── ヒーロー更新 ─────────────────────────────────────
@@ -434,15 +481,8 @@
       const p = d.portfolio;
       const isJP = d.symbol.endsWith('.T');
       const currentValue = p.shares * (d.price || 0);
-      if (isJP) {
-        mvJP += currentValue;
-        pnlJP += p.pnl;
-        hasJP = true;
-      } else {
-        mvUS += currentValue;
-        pnlUS += p.pnl;
-        hasUS = true;
-      }
+      if (isJP) { mvJP += currentValue; pnlJP += p.pnl; hasJP = true; }
+      else { mvUS += currentValue; pnlUS += p.pnl; hasUS = true; }
     });
 
     let mvFund = 0, pnlFund = 0, hasFund = false;
@@ -466,27 +506,39 @@
       const sign = totalPnl >= 0 ? '+' : '';
       pnlEl.textContent = `${sign}¥${totalPnl.toLocaleString('ja-JP')} 損益`;
       pnlEl.className = `hero-pnl ${totalPnl >= 0 ? 'pos' : 'neg'}`;
+
+      // アロケーションバー
+      const total = mvJP + mvUSJPY + mvFund;
+      if (total > 0) {
+        const pJP = mvJP / total * 100, pUS = mvUSJPY / total * 100, pFund = mvFund / total * 100;
+        document.getElementById('alloc-bar').innerHTML = `
+          <div class="alloc-seg" style="width:${pJP.toFixed(1)}%;background:#30D158"></div>
+          <div class="alloc-seg" style="width:${pUS.toFixed(1)}%;background:#0A84FF;margin-left:2px"></div>
+          <div class="alloc-seg" style="width:${pFund.toFixed(1)}%;background:#BF5AF2;margin-left:2px"></div>`;
+        document.getElementById('alloc-labels').innerHTML = `
+          <span class="alloc-label">JP ${pJP.toFixed(0)}%</span>
+          <span class="alloc-label">US ${pUS.toFixed(0)}%</span>
+          <span class="alloc-label">投信 ${pFund.toFixed(0)}%</span>`;
+        document.getElementById('alloc-bar-wrap').style.display = 'block';
+      }
     }
 
     if (hasJP) {
       document.getElementById('hero-jp-val').textContent = `¥${mvJP.toLocaleString('ja-JP')}`;
-      const sign = pnlJP >= 0 ? '+' : '';
       const el = document.getElementById('hero-jp-pnl');
-      el.textContent = `${sign}¥${pnlJP.toLocaleString('ja-JP')}`;
+      el.textContent = `${pnlJP >= 0 ? '+' : ''}¥${pnlJP.toLocaleString('ja-JP')}`;
       el.className = `hero-item-pnl ${pnlJP >= 0 ? 'pos' : 'neg'}`;
     }
     if (hasUS) {
       document.getElementById('hero-us-val').textContent = `¥${mvUSJPY.toLocaleString('ja-JP')}`;
-      const sign = pnlUSJPY >= 0 ? '+' : '';
       const el = document.getElementById('hero-us-pnl');
-      el.textContent = `${sign}¥${pnlUSJPY.toLocaleString('ja-JP')}`;
+      el.textContent = `${pnlUSJPY >= 0 ? '+' : ''}¥${pnlUSJPY.toLocaleString('ja-JP')}`;
       el.className = `hero-item-pnl ${pnlUSJPY >= 0 ? 'pos' : 'neg'}`;
     }
     if (hasFund) {
       document.getElementById('hero-fund-val').textContent = `¥${mvFund.toLocaleString('ja-JP')}`;
-      const sign = pnlFund >= 0 ? '+' : '';
       const el = document.getElementById('hero-fund-pnl');
-      el.textContent = `${sign}¥${pnlFund.toLocaleString('ja-JP')}`;
+      el.textContent = `${pnlFund >= 0 ? '+' : ''}¥${pnlFund.toLocaleString('ja-JP')}`;
       el.className = `hero-item-pnl ${pnlFund >= 0 ? 'pos' : 'neg'}`;
     }
   }
@@ -612,6 +664,8 @@
         }).join('')
       : `<span style="font-size:12px;color:var(--text3)">シグナルなし</span>`;
 
+    const sparkHtml = d.chart?.closes ? makeSpark(d.chart.closes, upDown) : '';
+
     card.innerHTML = `
       <div class="card-top">
         <div class="card-left">
@@ -626,37 +680,33 @@
           <div class="card-change ${changeClass}">${arrow} ${Math.abs(d.change_pct).toFixed(2)}%</div>
         </div>
       </div>
+      ${sparkHtml}
       ${pnlHtml}
       <div class="signals-row">${summaryBadge}${signalsHtml}</div>
-      <div class="indicators-grid">
-        <div class="ind-cell">
-          <div class="ind-cell-label">RSI</div>
-          <div class="ind-cell-val ${rsiColor}">${rsiText}</div>
-        </div>
-        <div class="ind-cell">
-          <div class="ind-cell-label">MACD</div>
-          <div class="ind-cell-val ${macdColor}">${macdText}</div>
-        </div>
-        <div class="ind-cell">
-          <div class="ind-cell-label">トレンド</div>
-          <div class="ind-cell-val ${smaColor}">${smaText}</div>
-        </div>
+      <div class="ind-chips">
+        <span class="ind-chip ${rsiColor}"><span class="chip-label">RSI</span> ${rsiText}</span>
+        <span class="ind-chip ${macdColor}"><span class="chip-label">MACD</span> ${macdText}</span>
+        <span class="ind-chip ${smaColor}"><span class="chip-label">トレンド</span> ${smaText}</span>
       </div>
       <div class="actions-row">
-        <button class="btn-action" onclick="toggleNews('${d.symbol}')">📰 ニュース</button>
-        <button class="btn-action" onclick="toggleChart('${d.symbol}')">📊 チャート</button>
+        <button class="btn-action" id="btn-news-${d.symbol}" onclick="toggleNews('${d.symbol}')">📰 ニュース</button>
+        <button class="btn-action" id="btn-chart-${d.symbol}" onclick="toggleChart('${d.symbol}')">📊 チャート</button>
       </div>
       <div class="news-wrap" id="news-${d.symbol}">
-        <div style="font-size:12px;color:var(--text2);padding:4px 0">読み込み中...</div>
+        <div class="news-inner">
+          <div style="font-size:12px;color:var(--text2);padding:4px 0">読み込み中...</div>
+        </div>
       </div>
       <div class="chart-wrap" id="chart-${d.symbol}">
-        <div class="chart-period-row" id="periods-${d.symbol}">
-          <button class="btn-period active" data-period="3mo" onclick="changeChartPeriod('${d.symbol}','3mo')">3ヶ月</button>
-          <button class="btn-period" data-period="1y" onclick="changeChartPeriod('${d.symbol}','1y')">1年</button>
-          <button class="btn-period" data-period="3y" onclick="changeChartPeriod('${d.symbol}','3y')">3年</button>
+        <div class="chart-inner">
+          <div class="chart-period-row" id="periods-${d.symbol}">
+            <button class="btn-period active" data-period="3mo" onclick="changeChartPeriod('${d.symbol}','3mo')">3ヶ月</button>
+            <button class="btn-period" data-period="1y" onclick="changeChartPeriod('${d.symbol}','1y')">1年</button>
+            <button class="btn-period" data-period="3y" onclick="changeChartPeriod('${d.symbol}','3y')">3年</button>
+          </div>
+          <div id="chart-loading-${d.symbol}" style="display:none;text-align:center;font-size:12px;color:var(--text2);padding:6px 0">読み込み中...</div>
+          <canvas id="canvas-${d.symbol}" height="150"></canvas>
         </div>
-        <div id="chart-loading-${d.symbol}" style="display:none;text-align:center;font-size:12px;color:var(--text2);padding:6px 0">読み込み中...</div>
-        <canvas id="canvas-${d.symbol}" height="150"></canvas>
       </div>
     `;
   }
@@ -727,9 +777,7 @@
       <div class="summary-card">
         ${rows.join('')}
         <div class="summary-row">
-          <div>
-            <div class="summary-row-name">国内株 合計</div>
-          </div>
+          <div><div class="summary-row-name">国内株 合計</div></div>
           <div class="summary-row-right">
             <div class="mv">¥${mvJP.toLocaleString('ja-JP',{maximumFractionDigits:0})}</div>
             <div class="pnl-sm ${jpCls}">${pnlJP >= 0 ? '+' : '-'}¥${Math.abs(pnlJP).toLocaleString('ja-JP',{maximumFractionDigits:0})}</div>
@@ -795,6 +843,7 @@
     const arrow = upDown ? '▲' : '▼';
     const pnlCls = d.pnl >= 0 ? 'pos' : 'neg';
     const evalPrice = Math.round(d.price / 10000 * d.kuchi);
+    const sparkHtml = d.chart?.closes ? makeSpark(d.chart.closes, upDown) : '';
 
     card.innerHTML = `
       <div class="card-top">
@@ -810,6 +859,7 @@
           <div class="card-change ${changeClass}">${arrow} ${Math.abs(d.change_pct).toFixed(2)}%</div>
         </div>
       </div>
+      ${sparkHtml}
       <div class="pnl-bar">
         <div class="pnl-bar-left">
           <strong>評価額</strong> ¥${evalPrice.toLocaleString('ja-JP')}
@@ -821,16 +871,18 @@
         </div>
       </div>
       <div class="actions-row">
-        <button class="btn-action" onclick="toggleFundChart('${d.code}')">📊 チャート</button>
+        <button class="btn-action" id="btn-fchart-${d.code}" onclick="toggleFundChart('${d.code}')">📊 チャート</button>
       </div>
       <div class="chart-wrap" id="fund-chart-${d.code}">
-        <div class="chart-period-row" id="fund-periods-${d.code}">
-          <button class="btn-period active" data-period="3mo" onclick="changeFundChartPeriod('${d.code}','3mo')">3ヶ月</button>
-          <button class="btn-period" data-period="1y" onclick="changeFundChartPeriod('${d.code}','1y')">1年</button>
-          <button class="btn-period" data-period="3y" onclick="changeFundChartPeriod('${d.code}','3y')">3年</button>
+        <div class="chart-inner">
+          <div class="chart-period-row" id="fund-periods-${d.code}">
+            <button class="btn-period active" data-period="3mo" onclick="changeFundChartPeriod('${d.code}','3mo')">3ヶ月</button>
+            <button class="btn-period" data-period="1y" onclick="changeFundChartPeriod('${d.code}','1y')">1年</button>
+            <button class="btn-period" data-period="3y" onclick="changeFundChartPeriod('${d.code}','3y')">3年</button>
+          </div>
+          <div id="fund-chart-loading-${d.code}" style="display:none;text-align:center;font-size:12px;color:var(--text2);padding:6px 0">読み込み中...</div>
+          <canvas id="fund-canvas-${d.code}" height="150"></canvas>
         </div>
-        <div id="fund-chart-loading-${d.code}" style="display:none;text-align:center;font-size:12px;color:var(--text2);padding:6px 0">読み込み中...</div>
-        <canvas id="fund-canvas-${d.code}" height="150"></canvas>
       </div>`;
   }
 
@@ -856,8 +908,10 @@
 
   function toggleFundChart(code) {
     const c = document.getElementById(`fund-chart-${code}`);
+    const btn = document.getElementById(`btn-fchart-${code}`);
     if (!c) return;
     const open = c.classList.toggle('open');
+    if (btn) btn.classList.toggle('active', open);
     if (open && !fundChartInstances[code]) renderFundChart(code, currentFundChartPeriod[code] || '3mo');
   }
 
@@ -888,7 +942,8 @@
         if (data.error) return;
         chartData = data.chart;
       } catch(e) {
-        if (document.getElementById(`fund-chart-loading-${code}`)) document.getElementById(`fund-chart-loading-${code}`).style.display = 'none';
+        const el = document.getElementById(`fund-chart-loading-${code}`);
+        if (el) el.style.display = 'none';
         canvas.style.opacity = '1';
         return;
       }
@@ -900,24 +955,28 @@
   const newsLoaded = {};
   async function toggleNews(symbol) {
     const c = document.getElementById(`news-${symbol}`);
+    const btn = document.getElementById(`btn-news-${symbol}`);
     if (!c) return;
     const open = c.classList.toggle('open');
+    if (btn) btn.classList.toggle('active', open);
     if (!open || newsLoaded[symbol]) return;
     newsLoaded[symbol] = true;
     try {
       const res = await fetch(`/api/news/${symbol}`);
       const data = await res.json();
+      const inner = c.querySelector('.news-inner');
       if (!data.news?.length) {
-        c.innerHTML = '<div style="font-size:12px;color:var(--text2);padding:4px 0">ニュースが見つかりません</div>';
+        inner.innerHTML = '<div style="font-size:12px;color:var(--text2);padding:4px 0">ニュースが見つかりません</div>';
         return;
       }
-      c.innerHTML = data.news.map(n => `
+      inner.innerHTML = data.news.map(n => `
         <div class="news-item">
           <div class="news-title"><a href="${n.link}" target="_blank">${n.title}</a></div>
           <div class="news-pub">${n.pub}</div>
         </div>`).join('');
     } catch(e) {
-      c.innerHTML = '<div style="font-size:12px;color:var(--red);padding:4px 0">取得失敗</div>';
+      const inner = c.querySelector('.news-inner');
+      if (inner) inner.innerHTML = '<div style="font-size:12px;color:var(--red);padding:4px 0">取得失敗</div>';
     }
   }
 
@@ -927,8 +986,10 @@
 
   function toggleChart(symbol) {
     const c = document.getElementById(`chart-${symbol}`);
+    const btn = document.getElementById(`btn-chart-${symbol}`);
     if (!c) return;
     const open = c.classList.toggle('open');
+    if (btn) btn.classList.toggle('active', open);
     if (open && !chartInstances[symbol]) renderChart(symbol, currentChartPeriod[symbol] || '3mo');
   }
 
@@ -960,7 +1021,8 @@
         if (data.error) return;
         chartData = data.chart;
       } catch(e) {
-        if (document.getElementById(`chart-loading-${symbol}`)) document.getElementById(`chart-loading-${symbol}`).style.display = 'none';
+        const el = document.getElementById(`chart-loading-${symbol}`);
+        if (el) el.style.display = 'none';
         canvas.style.opacity = '1';
         return;
       }
