@@ -3,15 +3,12 @@
 iPhoneのSafariからアクセスできるWebインターフェース
 """
 
-import json
 import math
 import os
 
 import pandas as pd
-from flask import Flask, Response, render_template, stream_with_context
+from flask import Flask, render_template
 
-import anthropic
-from analyzer import build_analysis_prompt
 from config import FUNDS, PORTFOLIO, WATCHLIST
 from fetcher import fetch_stock_data, fetch_ticker_info
 from fund_fetcher import fetch_fund_data
@@ -283,62 +280,6 @@ def api_chart(symbol: str, period: str):
         }
     except Exception as exc:
         return {"error": str(exc)}, 500
-
-
-@app.route("/api/analyze/<symbol>")
-def api_analyze(symbol: str):
-    """Claude AI による分析をストリーミングで返す (SSE)"""
-    symbol = symbol.upper()
-
-    def generate():
-        try:
-            df = fetch_stock_data(symbol, period="6mo")
-            if df.empty or len(df) < 30:
-                yield f"data: {json.dumps({'error': 'データ不足'})}\n\n"
-                return
-
-            df = add_all_indicators(df)
-            signals = detect_signals(df, symbol)
-
-            close = float(df["Close"].iloc[-1])
-            current_prices = {symbol: close}
-            pnl_map = portfolio.get_pnl(current_prices)
-            pos_pnl = pnl_map.get(symbol)
-
-            ticker_info = fetch_ticker_info(symbol)
-            prompt = build_analysis_prompt(symbol, df, signals, pos_pnl, ticker_info)
-
-            system_prompt = (
-                "あなたは豊富な経験を持つ投資アナリストです。"
-                "テクニカル分析を中心に、客観的かつ実践的な投資アドバイスを提供します。"
-                "分析は簡潔かつ具体的に行い、投資家が即座にアクションを取れるよう心がけてください。"
-            )
-
-            client = anthropic.Anthropic()
-            with client.messages.stream(
-                model="claude-opus-4-6",
-                max_tokens=2048,
-                thinking={"type": "adaptive"},
-                system=system_prompt,
-                messages=[{"role": "user", "content": prompt}],
-            ) as stream:
-                for text in stream.text_stream:
-                    yield f"data: {json.dumps({'text': text})}\n\n"
-
-            yield f"data: {json.dumps({'done': True})}\n\n"
-
-        except Exception as exc:
-            yield f"data: {json.dumps({'error': str(exc)})}\n\n"
-
-    return Response(
-        stream_with_context(generate()),
-        mimetype="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",
-            "Connection": "keep-alive",
-        },
-    )
 
 
 # ── 起動 ─────────────────────────────────────────────────────────────

@@ -190,43 +190,6 @@
     .news-title a:active { opacity: .6; }
     .news-pub { font-size: 11px; color: var(--text2); }
 
-    /* ── AI分析ボタン ── */
-    .analyze-row {
-      padding: 10px 16px 14px;
-      border-top: 1px solid var(--border);
-    }
-    .btn-analyze {
-      width: 100%; padding: 12px;
-      background: var(--blue); color: #fff;
-      border: none; border-radius: 10px;
-      font-size: 15px; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .btn-analyze:active { opacity: .8; }
-    .btn-analyze.loading { background: var(--text2); }
-
-    /* ── AI分析パネル ── */
-    .analysis-panel {
-      padding: 14px 16px;
-      border-top: 1px solid var(--border);
-      background: var(--blue-light);
-      display: none;
-    }
-    .analysis-panel.open { display: block; }
-    .analysis-title {
-      font-size: 13px; font-weight: 700; color: var(--blue);
-      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
-    }
-    .analysis-text {
-      font-size: 14px; line-height: 1.7; color: var(--text);
-      white-space: pre-wrap; word-break: break-word;
-    }
-    .analysis-cursor {
-      display: inline-block; width: 2px; height: 15px;
-      background: var(--blue); vertical-align: middle;
-      animation: blink .8s step-end infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
 
     /* ── 総合評価バッジ ── */
     .summary-badge {
@@ -312,7 +275,6 @@
   let watchlist = [];
   let funds = [];
   let scanResults = {};  // symbol → data
-  let activeAnalysis = null;  // 現在分析中のsymbol
 
   const summaryLabels = {
     STRONG_BUY:  '⬆⬆ 強い買い',
@@ -526,16 +488,6 @@
         <canvas id="canvas-${d.symbol}" height="160"></canvas>
       </div>
 
-      <div class="analyze-row">
-        <button class="btn-analyze" id="btn-${d.symbol}" onclick="startAnalysis('${d.symbol}')">
-          🤖 Claude AI で詳細分析
-        </button>
-      </div>
-
-      <div class="analysis-panel" id="panel-${d.symbol}">
-        <div class="analysis-title">🤖 AI分析結果</div>
-        <div class="analysis-text" id="text-${d.symbol}"></div>
-      </div>
     `;
   }
 
@@ -556,64 +508,6 @@
         </div>
       </div>
     `;
-  }
-
-  // ── AI 分析（SSE ストリーミング）──────────────────────────────────
-
-  function startAnalysis(symbol) {
-    // 前回の分析を閉じる
-    if (activeAnalysis && activeAnalysis !== symbol) {
-      const prev = document.getElementById(`panel-${activeAnalysis}`);
-      if (prev) prev.classList.remove('open');
-      const prevBtn = document.getElementById(`btn-${activeAnalysis}`);
-      if (prevBtn) { prevBtn.classList.remove('loading'); prevBtn.textContent = '🤖 Claude AI で詳細分析'; }
-    }
-
-    const panel = document.getElementById(`panel-${symbol}`);
-    const textEl = document.getElementById(`text-${symbol}`);
-    const btn = document.getElementById(`btn-${symbol}`);
-
-    // 既に表示済みならトグル
-    if (panel.classList.contains('open') && !btn.classList.contains('loading')) {
-      panel.classList.remove('open');
-      return;
-    }
-
-    panel.classList.add('open');
-    textEl.innerHTML = '<span class="analysis-cursor"></span>';
-    btn.classList.add('loading');
-    btn.textContent = '⏳ 分析中...';
-    activeAnalysis = symbol;
-
-    const es = new EventSource(`/api/analyze/${symbol}`);
-    let fullText = '';
-
-    es.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.text) {
-        fullText += data.text;
-        textEl.innerHTML = fullText.replace(/\n/g, '<br>') + '<span class="analysis-cursor"></span>';
-        // 自動スクロール
-        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-      if (data.done || data.error) {
-        es.close();
-        btn.classList.remove('loading');
-        btn.textContent = '🤖 AI分析済み（タップで開閉）';
-        if (data.error) {
-          textEl.innerHTML = `<span style="color:var(--red)">エラー: ${data.error}</span>`;
-        } else {
-          textEl.innerHTML = fullText.replace(/\n/g, '<br>');
-        }
-      }
-    };
-
-    es.onerror = () => {
-      es.close();
-      btn.classList.remove('loading');
-      btn.textContent = '🤖 Claude AI で詳細分析';
-      textEl.innerHTML = '<span style="color:var(--red)">接続エラーが発生しました。再度お試しください。</span>';
-    };
   }
 
   // ── ポートフォリオサマリー ─────────────────────────────────────
