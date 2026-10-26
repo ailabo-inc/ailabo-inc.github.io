@@ -253,6 +253,9 @@ def api_scan(symbol: str):
                 "dates": [d.strftime("%m/%d") for d in df.index[-60:]],
                 "closes": [round(float(v), 2) for v in df["Close"].iloc[-60:]],
                 "sma25": [_safe_float(v) for v in df["SMA_25"].iloc[-60:]],
+                "macd": [_safe_float(v) for v in df["MACD"].iloc[-60:]],
+                "macd_signal": [_safe_float(v) for v in df["MACD_Signal"].iloc[-60:]],
+                "macd_hist": [_safe_float(v) for v in df["MACD_Hist"].iloc[-60:]],
             },
         }
 
@@ -311,6 +314,9 @@ def api_chart(symbol: str, period: str):
                 "closes": [round(float(v), 2) for v in df["Close"]],
                 "sma25": [_safe_float(v) for v in df["SMA_25"]],
                 "avg_cost": avg_cost,
+                "macd": [_safe_float(v) for v in df["MACD"]],
+                "macd_signal": [_safe_float(v) for v in df["MACD_Signal"]],
+                "macd_hist": [_safe_float(v) for v in df["MACD_Hist"]],
             },
         }
     except Exception as exc:

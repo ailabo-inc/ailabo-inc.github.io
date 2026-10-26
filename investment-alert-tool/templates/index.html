@@ -304,6 +304,67 @@
       padding: 20px 0 8px;
     }
 
+    /* ── MACDサブパネル ── */
+    .macd-sub { padding: 4px 0 2px; }
+    .macd-sub-label {
+      font-size: 10px; font-weight: 700; color: var(--text3);
+      letter-spacing: 0.5px; margin-bottom: 2px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .macd-sub-label span { width: 18px; height: 2px; display: inline-block; border-radius: 1px; }
+
+    /* ── ガイドタブ ── */
+    .guide-section { margin: 18px 0 0; }
+    .guide-section-title {
+      font-size: 13px; font-weight: 700; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px;
+    }
+    .guide-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden;
+    }
+    .guide-card-header {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .guide-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .guide-card-title { font-size: 15px; font-weight: 700; }
+    .guide-card-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .guide-card-body { padding: 14px 16px; }
+    .guide-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .guide-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .guide-badge {
+      flex-shrink: 0; padding: 3px 9px; border-radius: 12px;
+      font-size: 12px; font-weight: 700; min-width: 56px; text-align: center;
+    }
+    .guide-badge.green { background: var(--green-soft); color: var(--green); }
+    .guide-badge.red { background: var(--red-soft); color: var(--red); }
+    .guide-badge.blue { background: var(--blue-soft); color: var(--blue); }
+    .guide-badge.gray { background: var(--card2); color: var(--text2); }
+    .guide-badge.orange { background: rgba(255,159,10,0.14); color: var(--orange); }
+    .guide-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+    .guide-text b { color: var(--text); font-weight: 700; }
+    .guide-text .muted { color: var(--text2); font-size: 12px; }
+    .guide-scale {
+      display: flex; align-items: center; gap: 0;
+      height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0 4px;
+    }
+    .guide-scale-seg { flex: 1; height: 100%; }
+    .guide-scale-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); }
+    .guide-note {
+      background: rgba(255,159,10,0.1); border-left: 3px solid var(--orange);
+      border-radius: 0 8px 8px 0; padding: 10px 12px; margin-top: 10px;
+      font-size: 12px; line-height: 1.6; color: var(--text2);
+    }
+
     /* ── ソートバー ── */
     .sort-bar { display: flex; gap: 6px; padding: 0 0 12px; flex-wrap: wrap; }
     .btn-sort {
@@ -441,6 +502,266 @@
       <div id="funds-section"></div>
     </div>
 
+    <div class="tab-panel" id="tab-guide">
+      <div class="guide-section">
+
+        <!-- ヒーローカードの見方 -->
+        <div class="guide-section-title">画面の見方</div>
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(10,132,255,0.12)">🏠</div>
+            <div>
+              <div class="guide-card-title">ヒーローカード（上部）</div>
+              <div class="guide-card-sub">総資産と損益の概要</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge blue">総資産</div>
+              <div class="guide-text">保有する全銘柄・投信の現在の時価合計。米国株は現在のドル円レートで円換算しています。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge green">損益</div>
+              <div class="guide-text">買った値段との差額（含み損益）。<b>+の場合は利益、−の場合は含み損</b>です。実際に売るまで確定しません。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge gray">配分バー</div>
+              <div class="guide-text">日本株・米国株・投信の割合。投信が大きければ安定重視、米国株が多ければ成長重視の構成です。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 株式カードの見方 -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(48,209,88,0.12)">📊</div>
+            <div>
+              <div class="guide-card-title">株式カード</div>
+              <div class="guide-card-sub">各銘柄の現在状況</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge green">スパーク</div>
+              <div class="guide-text">カード上部の小さなグラフ。<b>直近45日の値動きの方向</b>がひと目でわかります。右肩上がり=上昇トレンド。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge blue">変化率</div>
+              <div class="guide-text"><b>前日比の円額と%</b>。例：▲ ¥34 / 0.16% = 前日より34円・0.16%上がった。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge green">損益バー</div>
+              <div class="guide-text">保有している場合のみ表示。<b>何株を平均いくらで持っているか</b>と、現在の含み損益。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 指標の解説 -->
+        <div class="guide-section-title" style="margin-top:22px">テクニカル指標</div>
+
+        <!-- RSI -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(191,90,242,0.12)">📏</div>
+            <div>
+              <div class="guide-card-title">RSI（相対力指数）</div>
+              <div class="guide-card-sub">0〜100のスケールで「買われすぎ・売られすぎ」を測る</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-scale">
+              <div class="guide-scale-seg" style="background:#FF3B30;flex:2"></div>
+              <div class="guide-scale-seg" style="background:#FF9F0A;flex:1"></div>
+              <div class="guide-scale-seg" style="background:#8E8E93;flex:3"></div>
+              <div class="guide-scale-seg" style="background:#FF9F0A;flex:1"></div>
+              <div class="guide-scale-seg" style="background:#FF3B30;flex:2"></div>
+            </div>
+            <div class="guide-scale-labels"><span>0（超売られ）</span><span>30</span><span>50</span><span>70</span><span>100（超買われ）</span></div>
+            <div style="height:10px"></div>
+            <div class="guide-row">
+              <div class="guide-badge red">20以下</div>
+              <div class="guide-text"><b>強い売られすぎ</b>。反発しやすいタイミング。買いの根拠になりやすい。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge green">30〜70</div>
+              <div class="guide-text">通常の範囲。単独では判断材料として弱い。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge red">80以上</div>
+              <div class="guide-text"><b>強い買われすぎ</b>。過熱感あり。利益確定や新規購入の見送りを検討。</div>
+            </div>
+            <div class="guide-note">⚠️ RSI単独で売買しない。上昇トレンド中は70超えが続くことも多い。</div>
+          </div>
+        </div>
+
+        <!-- MACD -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(10,132,255,0.12)">〰️</div>
+            <div>
+              <div class="guide-card-title">MACD</div>
+              <div class="guide-card-sub">トレンドの勢いと転換点を見る</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge blue">仕組み</div>
+              <div class="guide-text">12日EMA − 26日EMAの差（MACD線）と、その9日平均（シグナル線）を使います。チャート下のパネルで確認できます。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge green">ゴールデン</div>
+              <div class="guide-text">MACD線がシグナル線を<b>上抜け</b> → 買いサイン。特にゼロラインより下からの上抜けは強いサイン。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge red">デッド</div>
+              <div class="guide-text">MACD線がシグナル線を<b>下抜け</b> → 売りサイン。ゼロラインより上からの下抜けは強い。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge gray">ヒスト</div>
+              <div class="guide-text">チャートの緑/赤の棒グラフ。棒が<b>縮んでいく</b>のはトレンドの勢いが弱まっているサイン（クロス予兆）。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ゴールデンクロス -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(255,159,10,0.12)">✖️</div>
+            <div>
+              <div class="guide-card-title">ゴールデン/デッドクロス</div>
+              <div class="guide-card-sub">移動平均線のクロス = 最も重要なシグナル</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge green">GC</div>
+              <div class="guide-text"><b>5日線が25日線を上抜けた日</b>。短期の勢いが中期トレンドを上回り始めた = 上昇転換の根拠。信頼度：高。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge red">DC</div>
+              <div class="guide-text"><b>5日線が25日線を下抜けた日</b>。上昇の勢いが失速 = 下落転換の根拠。保有銘柄は要注意。</div>
+            </div>
+            <div class="guide-note">💡 クロスは「起きた瞬間」にしかシグナルが出ません。出た当日か翌日の判断が重要です。</div>
+          </div>
+        </div>
+
+        <!-- ボリンジャーバンド -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(48,209,88,0.12)">📐</div>
+            <div>
+              <div class="guide-card-title">ボリンジャーバンド</div>
+              <div class="guide-card-sub">統計的な価格の「正常範囲」</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge gray">仕組み</div>
+              <div class="guide-text">20日間の平均価格と標準偏差から「上限・下限」を計算。約95%の価格はバンド内に収まります。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge green">下限割れ</div>
+              <div class="guide-text">統計的に「安すぎる」状態。反発しやすい。ただし悪材料がある場合は下限を割り続けることも。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge red">上限超え</div>
+              <div class="guide-text">統計的に「高すぎる」状態。調整（下落）が入りやすい。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- シグナルの読み方 -->
+        <div class="guide-section-title" style="margin-top:22px">シグナルの読み方</div>
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(48,209,88,0.12)">🎯</div>
+            <div>
+              <div class="guide-card-title">総合評価バッジ</div>
+              <div class="guide-card-sub">複数シグナルのスコア合計</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge green">⬆⬆強買</div>
+              <div class="guide-text">複数の強いBUYシグナルが重なっている状態（スコア+4以上）。最も根拠が厚い。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge green">⬆ 買い</div>
+              <div class="guide-text">BUYシグナルが優勢（スコア+2〜+3）。方向感はあるが過信は禁物。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge gray">━ 中立</div>
+              <div class="guide-text">シグナルが拮抗しているか、何も出ていない。様子見が無難。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge red">⬇⬇強売</div>
+              <div class="guide-text">複数の強いSELLシグナルが重なっている。保有中なら損切りや利確を検討。</div>
+            </div>
+            <div class="guide-note">💡 <b>シグナルは重なるほど信頼度が上がります。</b> RSI売られすぎ＋ゴールデンクロスが同時に出ているなら、単独より根拠が強い。逆にバラバラに出ているときは参考程度に。</div>
+          </div>
+        </div>
+
+        <!-- 投資信託 -->
+        <div class="guide-section-title" style="margin-top:22px">投資信託について</div>
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(10,132,255,0.12)">🏦</div>
+            <div>
+              <div class="guide-card-title">投信タブの見方</div>
+              <div class="guide-card-sub">テクニカル分析は使わない</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge blue">基準価額</div>
+              <div class="guide-text">投信1万口あたりの値段。毎日夕方に計算・発表されます（市場がある日のみ）。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge blue">評価額</div>
+              <div class="guide-text">現在の基準価額 × 保有口数 ÷ 10,000。今この瞬間に売ったときの概算金額。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge green">損益</div>
+              <div class="guide-text">評価額 − 取得額の差。積立投資の場合は長期間保有するほど取得コストが平均化されます（ドルコスト平均法）。</div>
+            </div>
+            <div class="guide-note">💡 投信はシグナルが出ません。<b>短期売買には向かず、長期積立として損益確認だけ</b>するのが現実的な使い方です。</div>
+          </div>
+        </div>
+
+        <!-- 大切なこと -->
+        <div class="guide-section-title" style="margin-top:22px">大切なこと</div>
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-icon" style="background:rgba(255,59,48,0.12)">⚠️</div>
+            <div>
+              <div class="guide-card-title">このツールの限界</div>
+              <div class="guide-card-sub">テクニカル分析だけで投資しないために</div>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div class="guide-row">
+              <div class="guide-badge orange">過去</div>
+              <div class="guide-text">全てのシグナルは<b>過去のデータ</b>から計算します。未来の価格を約束するものではありません。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge orange">遅延</div>
+              <div class="guide-text">移動平均線やMACDは<b>遅行指標</b>。シグナルが出たときには既にある程度動き終わっていることも。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge orange">一面</div>
+              <div class="guide-text">業績・ニュース・金利・為替など<b>ファンダメンタルズ</b>はこのツールでは見ません。テクニカルだけで判断しないことが大切です。</div>
+            </div>
+            <div class="guide-row">
+              <div class="guide-badge red">損失</div>
+              <div class="guide-text">投資は元本保証ではありません。<b>生活費や緊急時の資金は投資しない</b>のが基本原則です。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-info" style="padding-bottom:16px">このアプリは情報提供を目的としており、投資助言ではありません</div>
+      </div>
+    </div>
+
     <div class="footer-info" id="last-updated"></div>
   </div>
 </div>
@@ -454,6 +775,10 @@
   <button class="nav-btn" id="nav-btn-funds" onclick="switchTab('funds')">
     <div class="nav-btn-icon">🏦</div>
     <div class="nav-btn-label">投信</div>
+  </button>
+  <button class="nav-btn" id="nav-btn-guide" onclick="switchTab('guide')">
+    <div class="nav-btn-icon">📚</div>
+    <div class="nav-btn-label">ガイド</div>
   </button>
 </div>
 
@@ -759,6 +1084,10 @@
           </div>
           <div id="chart-loading-${d.symbol}" style="display:none;text-align:center;font-size:12px;color:var(--text2);padding:6px 0">読み込み中...</div>
           <canvas id="canvas-${d.symbol}" height="150"></canvas>
+          <div class="macd-sub">
+            <div class="macd-sub-label">MACD <span style="background:#0A84FF"></span>MACD <span style="background:#FF9F0A"></span>Signal <span style="background:rgba(142,142,147,0.4)"></span>Hist</div>
+            <canvas id="macd-canvas-${d.symbol}" height="70"></canvas>
+          </div>
         </div>
       </div>
     `;
@@ -1038,6 +1367,7 @@
 
   // ── チャート ───────────────────────────────────────
   const chartInstances = {};
+  const macdChartInstances = {};
   const currentChartPeriod = {};
 
   function toggleChart(symbol) {
@@ -1054,6 +1384,7 @@
     const row = document.getElementById(`periods-${symbol}`);
     if (row) row.querySelectorAll('.btn-period').forEach(b => b.classList.toggle('active', b.dataset.period === period));
     if (chartInstances[symbol]) { chartInstances[symbol].destroy(); delete chartInstances[symbol]; }
+    if (macdChartInstances[symbol]) { macdChartInstances[symbol].destroy(); delete macdChartInstances[symbol]; }
     await renderChart(symbol, period);
   }
 
@@ -1064,7 +1395,9 @@
     if (period === '3mo') {
       const d = scanResults[symbol];
       if (!d?.chart) return;
-      chartData = { dates: d.chart.dates, closes: d.chart.closes, sma25: d.chart.sma25, avg_cost: d.portfolio?.avg_cost ?? null };
+      chartData = { dates: d.chart.dates, closes: d.chart.closes, sma25: d.chart.sma25,
+                    macd: d.chart.macd, macd_signal: d.chart.macd_signal, macd_hist: d.chart.macd_hist,
+                    avg_cost: d.portfolio?.avg_cost ?? null };
     } else {
       const loadEl = document.getElementById(`chart-loading-${symbol}`);
       if (loadEl) loadEl.style.display = 'block';
@@ -1084,6 +1417,89 @@
       }
     }
     chartInstances[symbol] = makeChart(canvas, chartData, scanResults[symbol]);
+    const macdCanvas = document.getElementById(`macd-canvas-${symbol}`);
+    if (macdCanvas) macdChartInstances[symbol] = makeMacdChart(macdCanvas, chartData);
+  }
+
+  // ── MACDサブパネル ──────────────────────────────────
+  function makeMacdChart(canvas, chartData) {
+    if (!chartData.macd?.some(v => v !== null)) return null;
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)';
+    const textColor = '#8E8E93';
+
+    const histColors = (chartData.macd_hist || []).map((v, i) => {
+      if (v === null) return 'rgba(0,0,0,0)';
+      const prev = i > 0 ? chartData.macd_hist[i - 1] : v;
+      const growing = v >= (prev ?? v);
+      return v >= 0
+        ? (growing ? 'rgba(48,209,88,0.8)' : 'rgba(48,209,88,0.4)')
+        : (growing ? 'rgba(255,59,48,0.4)' : 'rgba(255,59,48,0.8)');
+    });
+
+    return new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: chartData.dates,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Hist',
+            data: chartData.macd_hist,
+            backgroundColor: histColors,
+            borderWidth: 0,
+            yAxisID: 'y',
+          },
+          {
+            type: 'line',
+            label: 'MACD',
+            data: chartData.macd,
+            borderColor: '#0A84FF',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0.3,
+            fill: false,
+            yAxisID: 'y',
+          },
+          {
+            type: 'line',
+            label: 'Signal',
+            data: chartData.macd_signal,
+            borderColor: '#FF9F0A',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0.3,
+            fill: false,
+            yAxisID: 'y',
+          },
+        ]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index', intersect: false,
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(3) ?? '-'}`,
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: gridColor },
+            ticks: { color: textColor, maxTicksLimit: 6, font: { size: 9 } },
+          },
+          y: {
+            grid: { color: gridColor },
+            position: 'right',
+            ticks: { color: textColor, font: { size: 9 }, maxTicksLimit: 4,
+                     callback: v => v.toFixed(1) },
+          }
+        }
+      }
+    });
   }
 
   // ── 共通チャート描画 ──────────────────────────────
@@ -1379,7 +1795,7 @@
       const dx = e.changedTouches[0].clientX - tx;
       const dy = e.changedTouches[0].clientY - ty;
       if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-      const tabs = ['stocks', 'funds'];
+      const tabs = ['stocks', 'funds', 'guide'];
       const active = document.querySelector('.nav-btn.active')?.id.replace('nav-btn-', '');
       const idx = tabs.indexOf(active);
       if (dx < 0 && idx < tabs.length - 1) switchTab(tabs[idx + 1]);
