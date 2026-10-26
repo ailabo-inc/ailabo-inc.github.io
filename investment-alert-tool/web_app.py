@@ -65,7 +65,8 @@ def api_fund_scan(code: str):
         return {"error": "ファンドが見つかりません"}, 404
 
     try:
-        df = fetch_fund_data(code)
+        fetch_code = fund.get("fetch_code", code)
+        df = fetch_fund_data(fetch_code)
         if df.empty or len(df) < 2:
             return {"error": "データ不足"}, 400
 
@@ -107,7 +108,8 @@ def api_fund_chart(code: str, period: str):
 
     fund = next((f for f in FUNDS if f["code"].upper() == code), {})
     try:
-        df = fetch_fund_data(code, days=period_days[period])
+        fetch_code = fund.get("fetch_code", code)
+        df = fetch_fund_data(fetch_code, days=period_days[period])
         if df.empty:
             return {"error": "データ不足"}, 400
 
