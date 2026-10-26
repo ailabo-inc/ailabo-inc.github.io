@@ -29,7 +29,9 @@ def fetch_stock_data(symbol: str, period: str = "6mo", interval: str = "1d") -> 
             if not df.empty:
                 if df.index.tz is not None:
                     df.index = df.index.tz_localize(None)
-                return df
+                df = df.dropna(subset=["Close"])
+                if not df.empty:
+                    return df
 
             # 方法2: yf.download() にフォールバック
             df = yf.download(symbol, period=period, interval=interval,
@@ -40,7 +42,9 @@ def fetch_stock_data(symbol: str, period: str = "6mo", interval: str = "1d") -> 
                 # MultiIndex の場合フラット化
                 if isinstance(df.columns, pd.MultiIndex):
                     df.columns = df.columns.get_level_values(0)
-                return df
+                df = df.dropna(subset=["Close"])
+                if not df.empty:
+                    return df
         except Exception:
             pass
         if attempt < 2:
