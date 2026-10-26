@@ -307,6 +307,27 @@
       padding: 20px 0 8px;
     }
 
+    /* ── プルトゥリフレッシュ ── */
+    .ptr-wrap {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      display: flex; justify-content: center;
+      pointer-events: none;
+    }
+    .ptr-pill {
+      margin-top: calc(env(safe-area-inset-top, 0px) + 52px);
+      background: var(--card); border-radius: 20px;
+      padding: 6px 14px; box-shadow: var(--shadow-lg);
+      font-size: 12px; font-weight: 600; color: var(--text2);
+      display: flex; align-items: center; gap: 6px;
+      transform: translateY(-60px) scale(0.85);
+      opacity: 0;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .ptr-pill.visible { transform: translateY(0) scale(1); opacity: 1; }
+    .ptr-pill .ptr-icon { font-size: 15px; display: inline-block; transition: transform 0.2s; }
+    .ptr-pill.ready .ptr-icon { transform: rotate(180deg); }
+    .ptr-pill.refreshing .ptr-icon { animation: spin 0.7s linear infinite; }
+
     /* ── ボトムナビ ── */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
@@ -333,6 +354,8 @@
   </style>
 </head>
 <body>
+
+<div class="ptr-wrap"><div class="ptr-pill" id="ptr-pill"><span class="ptr-icon">↓</span><span id="ptr-text">引いて更新</span></div></div>
 
 <div class="header">
   <div class="header-inner">
@@ -501,7 +524,7 @@
     const totalPnl = pnlJP + pnlUSJPY + pnlFund;
 
     if (totalJPY > 0) {
-      document.getElementById('hero-total').textContent = `¥${totalJPY.toLocaleString('ja-JP')}`;
+      countUp(document.getElementById('hero-total'), totalJPY);
       const pnlEl = document.getElementById('hero-pnl');
       const sign = totalPnl >= 0 ? '+' : '';
       pnlEl.textContent = `${sign}¥${totalPnl.toLocaleString('ja-JP')} 損益`;
@@ -665,6 +688,11 @@
       : `<span style="font-size:12px;color:var(--text3)">シグナルなし</span>`;
 
     const sparkHtml = d.chart?.closes ? makeSpark(d.chart.closes, upDown) : '';
+    const changeAbs = Math.abs(d.price * d.change_pct / (100 + d.change_pct));
+    const changeAbsStr = isJP
+      ? `¥${Math.round(changeAbs).toLocaleString('ja-JP')}`
+      : `$${changeAbs.toFixed(2)}`;
+    const cachedLabel = d.cached && d.fetched_at ? ` · ${d.fetched_at} 時点` : d.cached ? ' · 前回データ' : '';
 
     card.innerHTML = `
       <div class="card-top">
@@ -672,12 +700,12 @@
           <div class="sym-icon ${iconCls}">${d.symbol.replace('.T','')}</div>
           <div>
             <div class="card-name">${d.name}</div>
-            <div class="card-sub">${d.symbol}${d.cached ? ' · 前回データ' : ''}</div>
+            <div class="card-sub">${d.symbol}${cachedLabel}</div>
           </div>
         </div>
         <div class="card-right">
           <div class="card-price">${Number(d.price).toLocaleString('ja-JP', {maximumFractionDigits:2})}</div>
-          <div class="card-change ${changeClass}">${arrow} ${Math.abs(d.change_pct).toFixed(2)}%</div>
+          <div class="card-change ${changeClass}">${arrow} ${changeAbsStr} / ${Math.abs(d.change_pct).toFixed(2)}%</div>
         </div>
       </div>
       ${sparkHtml}
@@ -844,6 +872,8 @@
     const pnlCls = d.pnl >= 0 ? 'pos' : 'neg';
     const evalPrice = Math.round(d.price / 10000 * d.kuchi);
     const sparkHtml = d.chart?.closes ? makeSpark(d.chart.closes, upDown) : '';
+    const fundChangeAbs = Math.abs(Math.round(d.price * d.change_pct / (100 + d.change_pct)));
+    const fundCachedLabel = d.cached && d.fetched_at ? ` · ${d.fetched_at} 時点` : '';
 
     card.innerHTML = `
       <div class="card-top">
@@ -851,12 +881,12 @@
           <div class="sym-icon fund">投信</div>
           <div>
             <div class="card-name">${d.name}</div>
-            <div class="card-sub">${d.kuchi.toLocaleString('ja-JP')}口</div>
+            <div class="card-sub">${d.kuchi.toLocaleString('ja-JP')}口${fundCachedLabel}</div>
           </div>
         </div>
         <div class="card-right">
           <div class="card-price">${Number(d.price).toLocaleString('ja-JP')}円</div>
-          <div class="card-change ${changeClass}">${arrow} ${Math.abs(d.change_pct).toFixed(2)}%</div>
+          <div class="card-change ${changeClass}">${arrow} ¥${fundChangeAbs} / ${Math.abs(d.change_pct).toFixed(2)}%</div>
         </div>
       </div>
       ${sparkHtml}
@@ -1145,6 +1175,86 @@
     if (!('Notification' in window)) { btn.style.display = 'none'; return; }
     if (Notification.permission === 'granted') btn.classList.add('active');
   }
+
+  // ── 数値カウントアップ ────────────────────────────
+  function countUp(el, target, duration = 600) {
+    const start = Date.now();
+    const from = parseInt(el.textContent.replace(/[^\d]/g, '')) || 0;
+    const prefix = target >= 0 ? '¥' : '-¥';
+    const abs = Math.abs(target);
+    function step() {
+      const t = Math.min(1, (Date.now() - start) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const val = Math.round(from + (abs - from) * ease);
+      el.textContent = `${prefix}${val.toLocaleString('ja-JP')}`;
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── プルトゥリフレッシュ ──────────────────────────
+  (function() {
+    const pill = document.getElementById('ptr-pill');
+    const txt = document.getElementById('ptr-text');
+    const THRESHOLD = 65;
+    let startY = 0, pulling = false, ready = false;
+
+    document.addEventListener('touchstart', e => {
+      if (window.scrollY > 0) return;
+      startY = e.touches[0].clientY;
+      pulling = false; ready = false;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      if (startY === 0) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy < 10) return;
+      pulling = true;
+      pill.classList.add('visible');
+      if (dy >= THRESHOLD) {
+        if (!ready) { ready = true; pill.classList.add('ready'); txt.textContent = '離して更新'; }
+      } else {
+        if (ready) { ready = false; pill.classList.remove('ready'); txt.textContent = '引いて更新'; }
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      if (!pulling) return;
+      startY = 0; pulling = false;
+      if (ready) {
+        ready = false;
+        pill.classList.remove('ready');
+        pill.classList.add('refreshing');
+        txt.textContent = '更新中...';
+        scanAll().finally(() => {
+          pill.classList.remove('refreshing', 'visible');
+          txt.textContent = '引いて更新';
+        });
+      } else {
+        pill.classList.remove('visible', 'ready');
+      }
+    });
+  })();
+
+  // ── スワイプでタブ切り替え ────────────────────────
+  (function() {
+    const content = document.querySelector('.content');
+    let tx = 0, ty = 0;
+    content.addEventListener('touchstart', e => {
+      tx = e.touches[0].clientX;
+      ty = e.touches[0].clientY;
+    }, { passive: true });
+    content.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      const dy = e.changedTouches[0].clientY - ty;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      const tabs = ['stocks', 'funds'];
+      const active = document.querySelector('.nav-btn.active')?.id.replace('nav-btn-', '');
+      const idx = tabs.indexOf(active);
+      if (dx < 0 && idx < tabs.length - 1) switchTab(tabs[idx + 1]);
+      else if (dx > 0 && idx > 0) switchTab(tabs[idx - 1]);
+    }, { passive: true });
+  })();
 
   // ── 起動 ──────────────────────────────────────────
   initNotifyButton();

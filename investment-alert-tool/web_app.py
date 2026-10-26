@@ -6,6 +6,7 @@ iPhoneのSafariからアクセスできるWebインターフェース
 import json
 import math
 import os
+from datetime import datetime
 
 import pandas as pd
 from flask import Flask, render_template
@@ -115,7 +116,7 @@ def api_fund_scan(code: str):
                 "closes": [round(float(v), 0) for v in df["Close"].iloc[-60:]],
             },
         }
-        # キャッシュに保存（ディスクにも永続化）
+        result["fetched_at"] = datetime.now().strftime("%m/%d %H:%M")
         _fund_cache[code] = result
         _save_cache(_FUND_CACHE_FILE, _fund_cache)
         return result
@@ -263,7 +264,7 @@ def api_scan(symbol: str):
                 "pnl_pct": round(pos.pnl_pct, 1),
             }
 
-        # キャッシュに保存（ディスクにも永続化）
+        result["fetched_at"] = datetime.now().strftime("%m/%d %H:%M")
         _scan_cache[symbol] = result
         _save_cache(_SCAN_CACHE_FILE, _scan_cache)
         return result
