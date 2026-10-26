@@ -9,40 +9,40 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #F2F2F7;
-      --card: #FFFFFF;
-      --card2: #F2F2F7;
+      --bg: #F2F2F7; --card: #FFFFFF; --card2: #F2F2F7;
       --border: rgba(60,60,67,0.12);
-      --text: #1C1C1E;
-      --text2: #8E8E93;
-      --text3: #AEAEB2;
-      --green: #30D158;
-      --red: #FF3B30;
-      --orange: #FF9F0A;
-      --blue: #0A84FF;
-      --purple: #BF5AF2;
-      --green-soft: rgba(48,209,88,0.14);
-      --red-soft: rgba(255,59,48,0.14);
-      --blue-soft: rgba(10,132,255,0.14);
+      --text: #1C1C1E; --text2: #8E8E93; --text3: #AEAEB2;
+      --green: #30D158; --red: #FF3B30; --orange: #FF9F0A; --blue: #0A84FF; --purple: #BF5AF2;
+      --green-soft: rgba(48,209,88,0.14); --red-soft: rgba(255,59,48,0.14); --blue-soft: rgba(10,132,255,0.14);
       --radius: 16px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.07);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+      --shadow: 0 2px 12px rgba(0,0,0,0.07); --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+      --header-bg: rgba(242,242,247,0.82); --nav-bg: rgba(242,242,247,0.88);
     }
     @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #000000;
-        --card: #1C1C1E;
-        --card2: #2C2C2E;
+      :root:not([data-theme="light"]) {
+        --bg: #000000; --card: #1C1C1E; --card2: #2C2C2E;
         --border: rgba(255,255,255,0.1);
-        --text: #FFFFFF;
-        --text2: #8E8E93;
-        --text3: #636366;
-        --green-soft: rgba(48,209,88,0.18);
-        --red-soft: rgba(255,59,48,0.18);
-        --blue-soft: rgba(10,132,255,0.18);
-        --shadow: 0 2px 12px rgba(0,0,0,0.4);
-        --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+        --text: #FFFFFF; --text2: #8E8E93; --text3: #636366;
+        --green-soft: rgba(48,209,88,0.18); --red-soft: rgba(255,59,48,0.18); --blue-soft: rgba(10,132,255,0.18);
+        --shadow: 0 2px 12px rgba(0,0,0,0.4); --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+        --header-bg: rgba(0,0,0,0.82); --nav-bg: rgba(28,28,30,0.92);
       }
+    }
+    :root[data-theme="dark"] {
+      --bg: #000000; --card: #1C1C1E; --card2: #2C2C2E;
+      --border: rgba(255,255,255,0.1);
+      --text: #FFFFFF; --text2: #8E8E93; --text3: #636366;
+      --green-soft: rgba(48,209,88,0.18); --red-soft: rgba(255,59,48,0.18); --blue-soft: rgba(10,132,255,0.18);
+      --shadow: 0 2px 12px rgba(0,0,0,0.4); --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+      --header-bg: rgba(0,0,0,0.82); --nav-bg: rgba(28,28,30,0.92);
+    }
+    :root[data-theme="light"] {
+      --bg: #F2F2F7; --card: #FFFFFF; --card2: #F2F2F7;
+      --border: rgba(60,60,67,0.12);
+      --text: #1C1C1E; --text2: #8E8E93; --text3: #AEAEB2;
+      --green-soft: rgba(48,209,88,0.14); --red-soft: rgba(255,59,48,0.14); --blue-soft: rgba(10,132,255,0.14);
+      --shadow: 0 2px 12px rgba(0,0,0,0.07); --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+      --header-bg: rgba(242,242,247,0.82); --nav-bg: rgba(242,242,247,0.88);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -59,13 +59,10 @@
     .header {
       position: sticky; top: 0; z-index: 100;
       padding: calc(env(safe-area-inset-top, 0px) + 10px) 20px 10px;
-      background: rgba(242,242,247,0.82);
+      background: var(--header-bg);
       backdrop-filter: saturate(180%) blur(24px);
       -webkit-backdrop-filter: saturate(180%) blur(24px);
       border-bottom: 1px solid var(--border);
-    }
-    @media (prefers-color-scheme: dark) {
-      .header { background: rgba(0,0,0,0.82); }
     }
     .header-inner { display: flex; align-items: center; justify-content: space-between; }
     .header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
@@ -307,6 +304,28 @@
       padding: 20px 0 8px;
     }
 
+    /* ── ソートバー ── */
+    .sort-bar { display: flex; gap: 6px; padding: 0 0 12px; flex-wrap: wrap; }
+    .btn-sort {
+      padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);
+      background: none; font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-sort.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn-sort.buy-filter.active { background: var(--green); border-color: var(--green); }
+
+    /* ── 投信合計カード ── */
+    .fund-total-card {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px; margin-bottom: 12px;
+    }
+    .fund-total-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+    .fund-total-label { font-size: 11px; color: var(--text2); font-weight: 500; margin-bottom: 3px; }
+    .fund-total-val { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .fund-total-bar-wrap { background: var(--card2); border-radius: 4px; height: 6px; overflow: hidden; }
+    .fund-total-bar-fill { height: 100%; background: var(--blue); border-radius: 4px; transition: width 0.6s ease; }
+    .fund-total-meta { font-size: 11px; color: var(--text2); margin-top: 6px; }
+
     /* ── プルトゥリフレッシュ ── */
     .ptr-wrap {
       position: fixed; top: 0; left: 0; right: 0; z-index: 300;
@@ -331,15 +350,12 @@
     /* ── ボトムナビ ── */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-      background: rgba(242,242,247,0.88);
+      background: var(--nav-bg);
       backdrop-filter: saturate(180%) blur(24px);
       -webkit-backdrop-filter: saturate(180%) blur(24px);
       border-top: 1px solid var(--border);
       display: flex;
       padding: 0 0 env(safe-area-inset-bottom, 0px);
-    }
-    @media (prefers-color-scheme: dark) {
-      .bottom-nav { background: rgba(28,28,30,0.92); }
     }
     .nav-btn {
       flex: 1; border: none; background: none;
@@ -364,6 +380,7 @@
       <div class="header-sub" id="subtitle">読み込み中...</div>
     </div>
     <div class="header-actions">
+      <button class="btn-icon" id="btn-theme" onclick="toggleTheme()" title="テーマ">🌓</button>
       <button class="btn-icon" id="btn-notify" onclick="requestNotification()" title="通知">🔔</button>
       <button class="btn-refresh-main" id="btn-refresh" onclick="scanAll()">
         <span class="static-icon">↻</span>
@@ -407,6 +424,12 @@
   <div class="content">
     <div class="tab-panel active" id="tab-stocks">
       <div class="section-label">ウォッチリスト</div>
+      <div class="sort-bar">
+        <button class="btn-sort active" data-sort="default" onclick="setSortBy('default')">デフォルト</button>
+        <button class="btn-sort" data-sort="change" onclick="setSortBy('change')">変化率↓</button>
+        <button class="btn-sort" data-sort="pnl" onclick="setSortBy('pnl')">損益率↓</button>
+        <button class="btn-sort buy-filter" id="btn-filter-buy" onclick="toggleFilterBuy()">🔼 買いのみ</button>
+      </div>
       <div id="watchlist"></div>
       <div class="section-label">ポートフォリオ</div>
       <div id="portfolio-section"></div>
@@ -414,6 +437,7 @@
 
     <div class="tab-panel" id="tab-funds">
       <div class="section-label">投資信託</div>
+      <div id="fund-total-summary"></div>
       <div id="funds-section"></div>
     </div>
 
@@ -632,6 +656,7 @@
       scanResults[symbol] = data;
       renderCard(data);
       checkAndNotify(data);
+      applySortFilter();
     } catch (e) {
       renderCardError(symbol, name, e.message);
     }
@@ -858,6 +883,7 @@
       fundResults[code] = data;
       renderFundCard(data);
       renderHero();
+      renderFundTotal();
     } catch (e) {
       renderFundCardError(code, e.message);
     }
@@ -1174,6 +1200,111 @@
     const btn = document.getElementById('btn-notify');
     if (!('Notification' in window)) { btn.style.display = 'none'; return; }
     if (Notification.permission === 'granted') btn.classList.add('active');
+  }
+
+  // ── テーマ切り替え ────────────────────────────────
+  (function() {
+    let saved;
+    try { saved = localStorage.getItem('theme'); } catch(e) {}
+    if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    else if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  })();
+
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    let next;
+    if (!cur) next = 'dark';
+    else if (cur === 'dark') next = 'light';
+    else next = null;
+    if (next) document.documentElement.setAttribute('data-theme', next);
+    else document.documentElement.removeAttribute('data-theme');
+    try { localStorage.setItem('theme', next || 'system'); } catch(e) {}
+    const icons = { dark: '🌙', light: '☀️', null: '🌓' };
+    document.getElementById('btn-theme').textContent = icons[next] ?? '🌓';
+  }
+
+  // ── ソート／フィルター ────────────────────────────
+  let sortBy = 'default';
+  let filterBuyOnly = false;
+
+  function setSortBy(s) {
+    sortBy = s;
+    document.querySelectorAll('.btn-sort:not(.buy-filter)').forEach(b =>
+      b.classList.toggle('active', b.dataset.sort === s));
+    applySortFilter();
+  }
+
+  function toggleFilterBuy() {
+    filterBuyOnly = !filterBuyOnly;
+    document.getElementById('btn-filter-buy').classList.toggle('active', filterBuyOnly);
+    applySortFilter();
+  }
+
+  function applySortFilter() {
+    const wl = document.getElementById('watchlist');
+    const cards = [...wl.querySelectorAll('.card')];
+    cards.forEach(c => {
+      const sym = c.id.replace('card-', '');
+      const d = scanResults[sym];
+      if (filterBuyOnly && d) {
+        const hasBuy = d.summary === 'BUY' || d.summary === 'STRONG_BUY' ||
+          (d.signals || []).some(s => s.type === 'BUY');
+        c.style.display = hasBuy ? '' : 'none';
+      } else {
+        c.style.display = '';
+      }
+    });
+    if (sortBy === 'default') return;
+    const visible = cards.filter(c => c.style.display !== 'none');
+    visible.sort((a, b) => {
+      const da = scanResults[a.id.replace('card-', '')];
+      const db = scanResults[b.id.replace('card-', '')];
+      if (!da || !db) return 0;
+      if (sortBy === 'change') return db.change_pct - da.change_pct;
+      if (sortBy === 'pnl') {
+        const pa = da.portfolio?.pnl_pct ?? -9999;
+        const pb = db.portfolio?.pnl_pct ?? -9999;
+        return pb - pa;
+      }
+      return 0;
+    });
+    visible.forEach(c => wl.appendChild(c));
+  }
+
+  // ── 投信合計サマリー ──────────────────────────────
+  function renderFundTotal() {
+    const el = document.getElementById('fund-total-summary');
+    if (!el) return;
+    let totalCost = 0, totalVal = 0, totalPnl = 0, count = 0;
+    funds.forEach(f => {
+      const fd = fundResults[f.code];
+      if (!fd) return;
+      totalCost += fd.cost;
+      totalVal += Math.round(fd.price / 10000 * fd.kuchi);
+      totalPnl += (fd.pnl || 0);
+      count++;
+    });
+    if (count === 0) { el.innerHTML = ''; return; }
+    const ratio = totalCost > 0 ? totalVal / totalCost * 100 : 0;
+    const fillW = Math.min(100, ratio).toFixed(1);
+    const pnlCls = totalPnl >= 0 ? 'pos' : 'neg';
+    el.innerHTML = `
+      <div class="fund-total-card">
+        <div class="fund-total-row">
+          <div>
+            <div class="fund-total-label">合計評価額</div>
+            <div class="fund-total-val">¥${totalVal.toLocaleString('ja-JP')}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="fund-total-label">合計損益</div>
+            <div class="fund-total-val ${pnlCls}">${totalPnl >= 0 ? '+' : ''}¥${Math.abs(totalPnl).toLocaleString('ja-JP',{maximumFractionDigits:0})}</div>
+          </div>
+        </div>
+        <div class="fund-total-bar-wrap">
+          <div class="fund-total-bar-fill" style="width:${fillW}%"></div>
+        </div>
+        <div class="fund-total-meta">取得額 ¥${totalCost.toLocaleString('ja-JP')} に対して ${ratio.toFixed(1)}%（${count}ファンド）</div>
+      </div>`;
   }
 
   // ── 数値カウントアップ ────────────────────────────
