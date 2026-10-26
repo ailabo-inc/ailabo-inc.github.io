@@ -29,29 +29,29 @@ PORTFOLIO = [
 # cost: 取得金額合計（円）
 FUNDS = [
     {
-        "code": "0331418A",
+        "code": "03311187",
         "name": "eMAXIS Slim S&P500",
         "kuchi": 359368,
         "avg_cost": 44477,
         "cost": 1598361,
     },
     {
-        "code": "03311187",
+        "code": "0331418A",
         "name": "eMAXIS Slim 全世界株式（オール・カントリー）",
         "kuchi": 707709,
         "avg_cost": 29909,
         "cost": 2116686,
     },
     {
-        "code": "03311187B",
-        "fetch_code": "03311187",
+        "code": "0331418AB",
+        "fetch_code": "0331418A",
         "name": "eMAXIS Slim 全世界株式（旧口座）",
         "kuchi": 234593,
         "avg_cost": 18330,
         "cost": 430008,
     },
     {
-        "code": "89311179",
+        "code": "89311199",
         "name": "SBI・V・S&P500インデックス・ファンド",
         "kuchi": 19473,
         "avg_cost": 17118,
