@@ -21,7 +21,7 @@ PORTFOLIO = [
     {"symbol": "VOO",    "shares": 4,   "avg_cost": 672.15},
     {"symbol": "MSFT",   "shares": 1,   "avg_cost": 376.34},
     {"symbol": "NVDA",   "shares": 1,   "avg_cost": 175.00},
-    {"symbol": "IONQ",   "shares": 4,   "avg_cost": 28.58},
+    {"symbol": "IONQ",   "shares": 24,  "avg_cost": 30.70},
 ]
 
 # 投資信託リスト（Yahoo Finance Japan から基準価額を取得）
